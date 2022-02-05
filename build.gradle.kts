@@ -54,7 +54,8 @@ tasks.withType<JavaCompile> {
 }
 
 tasks.withType<Jar> {
-    if (sourceSets["main"].resources.srcDirs.first().list()!!.isEmpty()) {
+    val list: Array<String>? = sourceSets["main"].resources.srcDirs.first().list()
+    if (list == null || list.isEmpty()) {
         dependsOn("buildNative")
     }
 }
