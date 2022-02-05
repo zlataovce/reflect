@@ -39,7 +39,7 @@ library {
             archBits = 32
         }
     }
-    baseName.set("reflect-$osName-$archBits")
+    baseName.set("${if (osName == "windows") "lib" else ""}reflect-$osName-$archBits")
 }
 
 tasks.register("buildNative", Copy::class.java) {

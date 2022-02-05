@@ -1,4 +1,8 @@
 *.h
+*.pdb
+*.exp
+*.ilk
+*.lib
 .idea/
 .gradle/
 build/
