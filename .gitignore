@@ -1,0 +1,4 @@
+*.h
+.idea/
+.gradle/
+build/

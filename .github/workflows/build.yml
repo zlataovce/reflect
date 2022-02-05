@@ -1,0 +1,53 @@
+name: Build and commit native libraries
+
+on:
+  push:
+    branches:
+      - master
+    paths:
+      - "**.cpp"
+
+jobs:
+  build:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      max-parallel: 2
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+        architecture: [x86, x64]
+        exclude:
+          - os: macos-latest
+            architecture: x86
+    steps:
+      - uses: actions/checkout@v2.3.4
+      - name: Set up JDK
+        uses: actions/setup-java@v2
+        with:
+          distribution: 'temurin'
+          java-version: 8
+          architecture: ${{ matrix.architecture }}
+      - if: startsWith(matrix.os, 'ubuntu') && startsWith(matrix.architecture, 'x86')
+        name: Set up C/C++ compiler
+        run: |
+          sudo apt update
+          sudo apt-get -y install g++-multilib
+      - if: startsWith(matrix.os, 'windows-latest') && startsWith(matrix.architecture, 'x86')
+        name: Set up C/C++ compiler
+        uses: egor-tensin/setup-mingw@v2
+        with:
+          platform: ${{ matrix.architecture }}
+      - if: startsWith(matrix.os, 'ubuntu') || startsWith(matrix.os, 'macos')
+        name: Grant execute permission for gradlew
+        run: chmod +x gradlew
+      - name: Build libraries
+        run: gradlew buildNative
+      - name: Push compiled library back to GitHub
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git config pull.rebase false
+          git pull origin ${{ github.ref }}
+          git add .
+          git commit -am "Update native library: ${{ matrix.os }}-${{ matrix.architecture }}" --allow-empty
+          git push
