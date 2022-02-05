@@ -84,4 +84,22 @@ public class NativeLoader {
             // ignored
         }
     }
+
+    public static void loadNative(String name) {
+        String suffix;
+        switch (OS) {
+            case LINUX:
+                suffix = ".so";
+                break;
+            case MAC_OSX:
+                suffix = ".dylib";
+                break;
+            case WINDOWS:
+                suffix = ".dll";
+                break;
+            default:
+                throw new IllegalArgumentException("No native library available for this operating system");
+        }
+        loadLibraryFromResource(name + "-" + NativeLoader.OS.name().toLowerCase(Locale.ROOT) + "-" + NativeLoader.BITNESS + suffix);
+    }
 }

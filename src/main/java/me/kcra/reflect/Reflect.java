@@ -8,21 +8,7 @@ import java.util.Locale;
 @NoArgsConstructor(staticName = "reflect")
 public class Reflect {
     static {
-        String suffix;
-        switch (NativeLoader.OS) {
-            case LINUX:
-                suffix = ".so";
-                break;
-            case MAC_OSX:
-                suffix = ".dylib";
-                break;
-            case WINDOWS:
-                suffix = ".dll";
-                break;
-            default:
-                throw new IllegalArgumentException("No native library available for this operating system");
-        }
-        NativeLoader.loadLibraryFromResource("libreflect-" + NativeLoader.OS.name().toLowerCase(Locale.ROOT) + "-" + NativeLoader.BITNESS + suffix);
+        NativeLoader.loadNative("libreflect");
     }
 
     public native Object allocateInstance(Class<?> klass);
